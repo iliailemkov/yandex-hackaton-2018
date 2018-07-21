@@ -20,6 +20,8 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.sergon146.yandexhackaton.Labirint.maze;
 
+import java.util.Random;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
@@ -96,7 +98,7 @@ public class FieldView extends View {
         cols = Math.round(metrics.widthPixels / cellSize);
         rows = Math.round(metrics.heightPixels / cellSize);
 
-        fieldSize = (int) (Math.max(metrics.widthPixels, metrics.heightPixels) / cellSize);
+        fieldSize = (int) (Math.max(metrics.widthPixels, metrics.heightPixels) * 1.2f / cellSize);
 
         reset();
     }
@@ -105,6 +107,8 @@ public class FieldView extends View {
     ValueAnimator animator;
 
     boolean caught = true;
+
+    private final Random random = new Random();
 
     private void reset() {
         field = maze.driver(fieldSize);
@@ -120,6 +124,7 @@ public class FieldView extends View {
 
         float halfSize = cellSize / 2.0f;
 
+        outer:
         for (int i = 0; i < field.length; i++) {
             for (int j = 0; j < field.length; j++) {
                 if (!field[i][j]) {
@@ -130,6 +135,7 @@ public class FieldView extends View {
                     }
                     x = i;
                     y = j;
+                    if (random.nextFloat() < 0.03) break outer;
                 }
             }
         }
