@@ -25,7 +25,7 @@ import androidx.appcompat.app.AlertDialog;
 
 public class FieldView extends View {
 
-    private static final float CELL_SIZE = 24.0f;
+    private static final float CELL_SIZE = 30f;
     private static final float BALL_RADIUS = 8.0f;
     private static final float HOLE_RADIUS = 10.0f;
 
@@ -88,10 +88,10 @@ public class FieldView extends View {
 
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 
-        cols = (int) (metrics.widthPixels / cellSize);
-        rows = (int) (metrics.heightPixels / cellSize);
+        cols = Math.round(metrics.widthPixels / cellSize);
+        rows = Math.round(metrics.heightPixels / cellSize);
 
-        fieldSize = (int) (Math.max(metrics.widthPixels, metrics.heightPixels) / cellSize);
+        fieldSize = Math.round(Math.max(metrics.widthPixels, metrics.heightPixels) / cellSize);
 
         reset();
     }
@@ -334,5 +334,7 @@ public class FieldView extends View {
         RectF rectF = new RectF(ballX - radius, ballY - radius, ballX + radius, ballY + radius);
 
         canvas.drawBitmap(ballBitmap, null, rectF, null);
+
+        invalidate();
     }
 }

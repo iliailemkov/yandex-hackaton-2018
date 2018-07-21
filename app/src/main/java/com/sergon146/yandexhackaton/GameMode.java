@@ -9,7 +9,7 @@ public class GameMode {
 	public static int getCoefficient(String param, Integer value) {
 		switch(param) {
 			case LEVEL_INVERT:
-				return Double.valueOf(Math.random() * (1f - (-1f)) + (-1f)).intValue() < 0 ? -2 : 2;
+				return -2;
 			case LEVEL_RANDOM:
 				return Double.valueOf(Math.random() * (12f - (-12f)) + (-12f)).intValue();
 			case LEVEL_HARDCORE:
