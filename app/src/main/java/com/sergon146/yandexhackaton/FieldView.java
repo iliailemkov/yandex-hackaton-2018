@@ -20,6 +20,8 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.sergon146.yandexhackaton.Labirint.maze;
 
+import java.util.Random;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
@@ -28,6 +30,10 @@ public class FieldView extends View {
     private static final float CELL_SIZE = 30f;
     private static final float BALL_RADIUS = 8.0f;
     private static final float HOLE_RADIUS = 10.0f;
+
+    private View.OnClickListener listener;
+    private View.OnClickListener gotchaListener;
+    private View.OnClickListener restartListener;
 
     final PointF ball = new PointF();
     final PointF hole = new PointF();
@@ -40,13 +46,12 @@ public class FieldView extends View {
 
     static {
         holePaint = new Paint();
-        holePaint.setStrokeWidth(4.0f); // TODO
         holePaint.setStyle(Paint.Style.STROKE);
         holePaint.setColor(Color.DKGRAY);
         holePaint.setAntiAlias(true);
 
         blockPaint = new Paint();
-        blockPaint.setColor(Color.BLACK);
+        blockPaint.setColor(0x66000000);
         blockPaint.setStyle(Paint.Style.FILL);
         blockPaint.setAntiAlias(true);
     }
@@ -84,6 +89,8 @@ public class FieldView extends View {
         ballRadius = scale * BALL_RADIUS;
         holeRadius = scale * HOLE_RADIUS;
 
+        holePaint.setStrokeWidth(4.0f / 3.0f * scale);
+
         cellSize = scale * CELL_SIZE;
 
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
@@ -91,7 +98,7 @@ public class FieldView extends View {
         cols = Math.round(metrics.widthPixels / cellSize);
         rows = Math.round(metrics.heightPixels / cellSize);
 
-        fieldSize = Math.round(Math.max(metrics.widthPixels, metrics.heightPixels) / cellSize);
+        fieldSize = Math.round(Math.max(metrics.widthPixels, metrics.heightPixels) * 1.2f / cellSize);
 
         reset();
     }
@@ -100,6 +107,8 @@ public class FieldView extends View {
     ValueAnimator animator;
 
     boolean caught = true;
+
+    private final Random random = new Random();
 
     private void reset() {
         field = maze.driver(fieldSize);
@@ -115,6 +124,7 @@ public class FieldView extends View {
 
         float halfSize = cellSize / 2.0f;
 
+        outer:
         for (int i = 0; i < field.length; i++) {
             for (int j = 0; j < field.length; j++) {
                 if (!field[i][j]) {
@@ -125,6 +135,7 @@ public class FieldView extends View {
                     }
                     x = i;
                     y = j;
+                    if (random.nextFloat() < 0.03) break outer;
                 }
             }
         }
@@ -147,8 +158,7 @@ public class FieldView extends View {
                 if (fl < field.length - cols) {
                     fl++;
                 }
-            }
-            else if (i - fl < cols / 2) {
+            } else if (i - fl < cols / 2) {
                 if (fl > 0) {
                     fl--;
                 }
@@ -232,14 +242,16 @@ public class FieldView extends View {
                     multiplier = (float) animator.getAnimatedValue();
                     invalidate();
                 });
+                gotchaListener.onClick(this);
                 animator.addListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         holePaint.setColor(Color.YELLOW);
                         new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Light_Dialog_Alert)
                                 .setTitle("GOTCHA")
-                                .setPositiveButton("Next Level", null)
-                                .setNegativeButton("Exit", null)
+                                .setPositiveButton("Next Level", (di, i1) ->
+                                        restartListener.onClick(null))
+                                .setNegativeButton("Exit", (dialogInterface, i1) -> finish())
                                 .setOnDismissListener(dialogInterface -> restart())
                                 .show();
                     }
@@ -247,6 +259,10 @@ public class FieldView extends View {
                 animator.start();
             }
         }
+    }
+
+    private void finish() {
+        listener.onClick(this);
     }
 
     float lastX = 0, lastY = 0;
@@ -265,43 +281,6 @@ public class FieldView extends View {
         }
         return super.onTouchEvent(event);
     }
-
-    //    @SuppressLint("ClickableViewAccessibility")
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        if (event.getAction() == MotionEvent.ACTION_MOVE && !caught) {
-//            ball.x = Math.min(Math.max(event.getX(), ballRadius), getWidth() - ballRadius);
-//            ball.y = Math.min(Math.max(event.getY(), ballRadius), getHeight() - ballRadius);
-//            invalidate();
-//
-//            if (Math.hypot(ball.x - hole.x, ball.y - hole.y) < (holeRadius - ballRadius)) {
-//                caught = true;
-//                if (animator != null) animator.cancel();
-//                animator = ValueAnimator.ofFloat(1.0f, 0.0f).setDuration(500);
-//                animator.setInterpolator(new AccelerateDecelerateInterpolator());
-//                animator.addUpdateListener(animator -> {
-//                    multiplier = (float) animator.getAnimatedValue();
-//                    invalidate();
-//                });
-//                animator.addListener(new AnimatorListenerAdapter() {
-//                    @Override
-//                    public void onAnimationEnd(Animator animation) {
-//                        holePaint.setColor(Color.YELLOW);
-//                        new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Light_Dialog_Alert)
-//                                .setTitle("GOTCHA")
-//                                .setPositiveButton("Next Level", null)
-//                                .setNegativeButton("Exit", null)
-//                                .setOnDismissListener(dialogInterface -> restart())
-//                                .show();
-//                    }
-//                });
-//                animator.start();
-//            }
-//        } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//            return true;
-//        }
-//        return super.onTouchEvent(event);
-//    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -336,5 +315,17 @@ public class FieldView extends View {
         canvas.drawBitmap(ballBitmap, null, rectF, null);
 
         invalidate();
+    }
+
+    public void setListener(OnClickListener listener) {
+        this.listener = listener;
+    }
+
+    public void setGotchaListener(OnClickListener gotchaListener) {
+        this.gotchaListener = gotchaListener;
+    }
+
+    public void setRestartListener(OnClickListener restartListener) {
+        this.restartListener = restartListener;
     }
 }
