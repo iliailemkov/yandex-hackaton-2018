@@ -42,13 +42,12 @@ public class FieldView extends View {
 
     static {
         holePaint = new Paint();
-        holePaint.setStrokeWidth(4.0f); // TODO
         holePaint.setStyle(Paint.Style.STROKE);
         holePaint.setColor(Color.DKGRAY);
         holePaint.setAntiAlias(true);
 
         blockPaint = new Paint();
-        blockPaint.setColor(Color.BLACK);
+        blockPaint.setColor(0x66000000);
         blockPaint.setStyle(Paint.Style.FILL);
         blockPaint.setAntiAlias(true);
     }
@@ -85,6 +84,8 @@ public class FieldView extends View {
         final float scale = getContext().getResources().getDisplayMetrics().density;
         ballRadius = scale * BALL_RADIUS;
         holeRadius = scale * HOLE_RADIUS;
+
+        holePaint.setStrokeWidth(4.0f / 3.0f * scale);
 
         cellSize = scale * CELL_SIZE;
 
