@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         //Set FullScreen & portrait
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         fieldView = findViewById(R.id.field);
         fieldView.setListener(v -> finish());
+        fieldView.setKeepScreenOn(true);
 
         //Calculate Boundry
         DisplayMetrics displaymetrics = new DisplayMetrics();
