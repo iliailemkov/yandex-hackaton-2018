@@ -1,25 +1,26 @@
 package com.sergon146.yandexhackaton.Labirint;
 // a utility class to represent single cell
-import java.util.*;
 
-public class Cel{
-    public boolean right,down;
+import java.util.List;
+
+public class Cel {
+    public boolean right, down;
 
     public List<Cel> set;
 
-    public int x,y;
+    public int x, y;
 
-    Cel(int a,int b){
+    Cel(int a, int b) {
 
-        x=a;
+        x = a;
 
-        y=b;
+        y = b;
 
-        right=false;
+        right = false;
 
-        down=true;
+        down = true;
 
-        set=null;
+        set = null;
 
     }
 

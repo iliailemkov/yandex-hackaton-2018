@@ -17,6 +17,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
+import com.sergon146.yandexhackaton.Labirint.maze;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
@@ -60,6 +62,8 @@ public class FieldView extends View {
         this(context, attrs, 0);
     }
 
+    final boolean[][] field;
+
     public FieldView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
@@ -75,6 +79,9 @@ public class FieldView extends View {
         ball.y = ballRadius * 2.5f;
 
         reset();
+
+        int cols = Math.round(context.getResources().getDisplayMetrics().widthPixels / cellSize);
+        field = maze.driver(cols);
     }
 
     @Nullable
@@ -141,6 +148,12 @@ public class FieldView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        for (int i = 0; i < field.length; i++) {
+            for (int j = 0; j < field.length; j++) {
+//                canvas.drawRect(i * cellSize, j * cellSize, (i + 1) * cellSize, (j + 1) * cellSize, );
+            }
+        }
 
 
         canvas.drawOval(hole.x - holeRadius, hole.y - holeRadius, hole.x + holeRadius, hole.y + holeRadius, holePaint);

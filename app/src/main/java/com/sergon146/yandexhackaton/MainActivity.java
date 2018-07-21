@@ -1,7 +1,5 @@
 package com.sergon146.yandexhackaton;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -16,10 +14,11 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 
 
@@ -129,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             final int dstWidth = 50;
             final int dstHeight = 50;
             mBitmap = Bitmap.createScaledBitmap(ball, dstWidth, dstHeight, true);
-            mWood = BitmapFactory.decodeResource(getResources(), R.drawable.wood);
+//            mWood = BitmapFactory.decodeResource(getResources(), R.drawable.wood);
         }
 
         protected void onDraw(Canvas canvas)

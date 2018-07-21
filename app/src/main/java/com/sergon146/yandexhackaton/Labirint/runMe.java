@@ -7,7 +7,7 @@ public class runMe{
 
         maze t =new maze();
 
-        boolean[][] mass = maze.driver();
+        boolean[][] mass = maze.driver(0);
 
     }
 
