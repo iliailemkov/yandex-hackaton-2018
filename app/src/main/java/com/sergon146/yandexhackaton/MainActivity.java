@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         xPosition += xS;
         yPosition -= yS;
 
-//        fieldView.update(xS, -yS);
+        fieldView.update(xS, -yS);
 
         if (xPosition > xmax) {
             xPosition = xmax;
