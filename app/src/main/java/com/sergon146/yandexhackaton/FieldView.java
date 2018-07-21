@@ -30,6 +30,8 @@ public class FieldView extends View {
     private static final float HOLE_RADIUS = 10.0f;
 
     private View.OnClickListener listener;
+    private View.OnClickListener gotchaListener;
+    private View.OnClickListener restartListener;
 
     final PointF ball = new PointF();
     final PointF hole = new PointF();
@@ -234,16 +236,16 @@ public class FieldView extends View {
                     multiplier = (float) animator.getAnimatedValue();
                     invalidate();
                 });
+                gotchaListener.onClick(this);
                 animator.addListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         holePaint.setColor(Color.YELLOW);
                         new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Light_Dialog_Alert)
                                 .setTitle("GOTCHA")
-                                .setPositiveButton("Next Level", null)
-                                .setNegativeButton("Exit", (dialogInterface, i1) -> {
-                                    finish();
-                                })
+                                .setPositiveButton("Next Level", (di, i1) ->
+                                        restartListener.onClick(null))
+                                .setNegativeButton("Exit", (dialogInterface, i1) -> finish())
                                 .setOnDismissListener(dialogInterface -> restart())
                                 .show();
                     }
@@ -273,43 +275,6 @@ public class FieldView extends View {
         }
         return super.onTouchEvent(event);
     }
-
-    //    @SuppressLint("ClickableViewAccessibility")
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        if (event.getAction() == MotionEvent.ACTION_MOVE && !caught) {
-//            ball.x = Math.min(Math.max(event.getX(), ballRadius), getWidth() - ballRadius);
-//            ball.y = Math.min(Math.max(event.getY(), ballRadius), getHeight() - ballRadius);
-//            invalidate();
-//
-//            if (Math.hypot(ball.x - hole.x, ball.y - hole.y) < (holeRadius - ballRadius)) {
-//                caught = true;
-//                if (animator != null) animator.cancel();
-//                animator = ValueAnimator.ofFloat(1.0f, 0.0f).setDuration(500);
-//                animator.setInterpolator(new AccelerateDecelerateInterpolator());
-//                animator.addUpdateListener(animator -> {
-//                    multiplier = (float) animator.getAnimatedValue();
-//                    invalidate();
-//                });
-//                animator.addListener(new AnimatorListenerAdapter() {
-//                    @Override
-//                    public void onAnimationEnd(Animator animation) {
-//                        holePaint.setColor(Color.YELLOW);
-//                        new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Light_Dialog_Alert)
-//                                .setTitle("GOTCHA")
-//                                .setPositiveButton("Next Level", null)
-//                                .setNegativeButton("Exit", null)
-//                                .setOnDismissListener(dialogInterface -> restart())
-//                                .show();
-//                    }
-//                });
-//                animator.start();
-//            }
-//        } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//            return true;
-//        }
-//        return super.onTouchEvent(event);
-//    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -346,5 +311,13 @@ public class FieldView extends View {
 
     public void setListener(OnClickListener listener) {
         this.listener = listener;
+    }
+
+    public void setGotchaListener(OnClickListener gotchaListener) {
+        this.gotchaListener = gotchaListener;
+    }
+
+    public void setRestartListener(OnClickListener restartListener) {
+        this.restartListener = restartListener;
     }
 }

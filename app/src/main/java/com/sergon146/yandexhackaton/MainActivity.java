@@ -1,6 +1,7 @@
 package com.sergon146.yandexhackaton;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -53,6 +54,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         fieldView = findViewById(R.id.field);
         fieldView.setListener(v -> finish());
+        fieldView.setGotchaListener(v -> {
+            stopService(new Intent(this, BackgroundSoundService.class));
+
+            Intent svc = new Intent(this, GotchaSoundService.class);
+            startService(svc);
+        });
+        fieldView.setRestartListener(v -> {
+            stopService(new Intent(this, GotchaSoundService.class));
+            stopService(new Intent(this, BackgroundSoundService.class));
+            Intent svc = new Intent(this, BackgroundSoundService.class);
+            startService(svc);
+        });
 
         //Calculate Boundry
         DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -68,6 +81,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
             }
         }).start();
+
+        Intent svc = new Intent(this, BackgroundSoundService.class);
+        startService(svc);
     }
 
     private void updateBall(int speedCoef) {
@@ -144,5 +160,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // TODO Auto-generated method stub
         super.onConfigurationChanged(newConfig);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopService(new Intent(this, BackgroundSoundService.class));
     }
 }
