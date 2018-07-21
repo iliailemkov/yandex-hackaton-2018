@@ -32,8 +32,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Bitmap mWood;
     private SensorManager sensorManager = null;
     public float frameTime = 0.666f;
-
     private FieldView fieldView;
+
+    int coef = 2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +60,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         ymax = 1000; //displaymetrics.widthPixels;
-        xmax = 1000;//displaymetrics.heightPixels;
-
+        xmax = 1000; //displaymetrics.heightPixels;
+        String gameMode = getIntent().getStringExtra(WelcomeActivity.LEVEL_EXTRA);
+        new Thread((Runnable) ()-> {
+            for(;;) {
+                try {
+                    coef = GameMode.getCoefficient(gameMode, coef);
+                    Thread.sleep(3000);
+                }
+                catch(InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
+
     private void updateBall(int speedCoef) {
         //Calculate new speed
         xVelocity += (xAcceleration * speedCoef * frameTime);
@@ -95,10 +109,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     {
         if (sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             //Set sensor values as acceleration
+
             xAcceleration = sensorEvent.values[1];
             yAcceleration = -sensorEvent.values[0];
 //            Log.d("sensor", String.format("x:%f y:%f", xAcceleration, yAcceleration));
-            updateBall(1);
+
+            updateBall(coef);
         }
     }
 
@@ -133,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             final int dstWidth = 50;
             final int dstHeight = 50;
             mBitmap = Bitmap.createScaledBitmap(ball, dstWidth, dstHeight, true);
-//            mWood = BitmapFactory.decodeResource(getResources(), R.drawable.wood);
+            mWood = BitmapFactory.decodeResource(getResources(), R.drawable.wood);
         }
 
         protected void onDraw(Canvas canvas)
