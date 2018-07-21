@@ -42,6 +42,10 @@ public class FieldView extends View {
 
     private static final Paint blockPaint;
 
+    private static final Paint fogPaint;
+
+    private final float fogRadius;
+
     static {
         holePaint = new Paint();
         holePaint.setStyle(Paint.Style.STROKE);
@@ -52,6 +56,11 @@ public class FieldView extends View {
         blockPaint.setColor(0x66000000);
         blockPaint.setStyle(Paint.Style.FILL);
         blockPaint.setAntiAlias(true);
+
+        fogPaint = new Paint();
+        fogPaint.setStyle(Paint.Style.STROKE);
+        fogPaint.setColor(Color.BLACK);
+        fogPaint.setAntiAlias(true);
     }
 
     final float ballRadius;
@@ -87,11 +96,16 @@ public class FieldView extends View {
         ballRadius = scale * BALL_RADIUS;
         holeRadius = scale * HOLE_RADIUS;
 
+
         holePaint.setStrokeWidth(4.0f / 3.0f * scale);
 
         cellSize = scale * CELL_SIZE;
 
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+
+
+        fogRadius = scale * 20.0f + metrics.heightPixels;
+        fogPaint.setStrokeWidth(metrics.heightPixels);
 
         cols = Math.round(metrics.widthPixels / cellSize);
         rows = Math.round(metrics.heightPixels / cellSize);
@@ -149,6 +163,7 @@ public class FieldView extends View {
 
     public void update(float dx, float dy) {
         if (!caught) {
+
             int i = (int) (ball.x / cellSize);
             int j = (int) (ball.y / cellSize);
 
@@ -280,43 +295,6 @@ public class FieldView extends View {
         return super.onTouchEvent(event);
     }
 
-    //    @SuppressLint("ClickableViewAccessibility")
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        if (event.getAction() == MotionEvent.ACTION_MOVE && !caught) {
-//            ball.x = Math.min(Math.max(event.getX(), ballRadius), getWidth() - ballRadius);
-//            ball.y = Math.min(Math.max(event.getY(), ballRadius), getHeight() - ballRadius);
-//            invalidate();
-//
-//            if (Math.hypot(ball.x - hole.x, ball.y - hole.y) < (holeRadius - ballRadius)) {
-//                caught = true;
-//                if (animator != null) animator.cancel();
-//                animator = ValueAnimator.ofFloat(1.0f, 0.0f).setDuration(500);
-//                animator.setInterpolator(new AccelerateDecelerateInterpolator());
-//                animator.addUpdateListener(animator -> {
-//                    multiplier = (float) animator.getAnimatedValue();
-//                    invalidate();
-//                });
-//                animator.addListener(new AnimatorListenerAdapter() {
-//                    @Override
-//                    public void onAnimationEnd(Animator animation) {
-//                        holePaint.setColor(Color.YELLOW);
-//                        new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Light_Dialog_Alert)
-//                                .setTitle("GOTCHA")
-//                                .setPositiveButton("Next Level", null)
-//                                .setNegativeButton("Exit", null)
-//                                .setOnDismissListener(dialogInterface -> restart())
-//                                .show();
-//                    }
-//                });
-//                animator.start();
-//            }
-//        } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//            return true;
-//        }
-//        return super.onTouchEvent(event);
-//    }
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -348,6 +326,7 @@ public class FieldView extends View {
         RectF rectF = new RectF(ballX - radius, ballY - radius, ballX + radius, ballY + radius);
 
         canvas.drawBitmap(ballBitmap, null, rectF, null);
+        canvas.drawArc(ballX - fogRadius, ballY - fogRadius, ballX + fogRadius, ballY + fogRadius, 0.0f, 360.0f, true, fogPaint);
     }
 
     public void setListener(OnClickListener listener) {
