@@ -29,6 +29,8 @@ public class FieldView extends View {
     private static final float BALL_RADIUS = 8.0f;
     private static final float HOLE_RADIUS = 10.0f;
 
+    private View.OnClickListener listener;
+
     final PointF ball = new PointF();
     final PointF hole = new PointF();
 
@@ -88,8 +90,8 @@ public class FieldView extends View {
 
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 
-        cols = (int) (metrics.widthPixels / cellSize);
-        rows = (int) (metrics.heightPixels / cellSize);
+        cols = Math.round(metrics.widthPixels / cellSize);
+        rows = Math.round(metrics.heightPixels / cellSize);
 
         fieldSize = (int) (Math.max(metrics.widthPixels, metrics.heightPixels) / cellSize);
 
@@ -147,8 +149,7 @@ public class FieldView extends View {
                 if (fl < field.length - cols) {
                     fl++;
                 }
-            }
-            else if (i - fl < cols / 2) {
+            } else if (i - fl < cols / 2) {
                 if (fl > 0) {
                     fl--;
                 }
@@ -239,7 +240,9 @@ public class FieldView extends View {
                         new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Light_Dialog_Alert)
                                 .setTitle("GOTCHA")
                                 .setPositiveButton("Next Level", null)
-                                .setNegativeButton("Exit", null)
+                                .setNegativeButton("Exit", (dialogInterface, i1) -> {
+                                    finish();
+                                })
                                 .setOnDismissListener(dialogInterface -> restart())
                                 .show();
                     }
@@ -247,6 +250,10 @@ public class FieldView extends View {
                 animator.start();
             }
         }
+    }
+
+    private void finish() {
+        listener.onClick(this);
     }
 
     float lastX = 0, lastY = 0;
@@ -334,5 +341,9 @@ public class FieldView extends View {
         RectF rectF = new RectF(ballX - radius, ballY - radius, ballX + radius, ballY + radius);
 
         canvas.drawBitmap(ballBitmap, null, rectF, null);
+    }
+
+    public void setListener(OnClickListener listener) {
+        this.listener = listener;
     }
 }
