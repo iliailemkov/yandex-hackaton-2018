@@ -158,12 +158,12 @@ public class maze{
 
 
 
-    static public boolean[][] driver(){
+    static public boolean[][] driver(int inputSize){
 
 
-        System.out.print("Enter size: ");
+       // System.out.print("Enter size: ");
 
-        size=in.nextInt();
+        size = inputSize;
 
         maze=new int[2*size+1][2*size+1];
 
@@ -215,16 +215,14 @@ public class maze{
 
         for(int i=0;i<2*size+1;i++){
 
-            //TODO: Вывести в массив
-
-            System.out.println();
+           // System.out.println();
 
             for(int j=0;j<2*size+1;j++)
 
             {
                 if (maze[i][j] == 1) result[i][j] = true;
                 else  result[i][j] = false;
-                System.out.print(maze[i][j] + " ");
+               //System.out.print(maze[i][j] + " ");
             }
         }
 
