@@ -27,11 +27,13 @@ import androidx.appcompat.app.AlertDialog;
 
 public class FieldView extends View {
 
-    private static final float CELL_SIZE = 24.0f;
+    private static final float CELL_SIZE = 30f;
     private static final float BALL_RADIUS = 8.0f;
     private static final float HOLE_RADIUS = 10.0f;
 
     private View.OnClickListener listener;
+    private View.OnClickListener gotchaListener;
+    private View.OnClickListener restartListener;
 
     final PointF ball = new PointF();
     final PointF hole = new PointF();
@@ -110,7 +112,7 @@ public class FieldView extends View {
         cols = Math.round(metrics.widthPixels / cellSize);
         rows = Math.round(metrics.heightPixels / cellSize);
 
-        fieldSize = (int) (Math.max(metrics.widthPixels, metrics.heightPixels) * 1.2f / cellSize);
+        fieldSize = Math.round(Math.max(metrics.widthPixels, metrics.heightPixels) * 1.2f / cellSize);
 
         reset();
     }
@@ -255,16 +257,16 @@ public class FieldView extends View {
                     multiplier = (float) animator.getAnimatedValue();
                     invalidate();
                 });
+                gotchaListener.onClick(this);
                 animator.addListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         holePaint.setColor(Color.YELLOW);
                         new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Light_Dialog_Alert)
                                 .setTitle("GOTCHA")
-                                .setPositiveButton("Next Level", null)
-                                .setNegativeButton("Exit", (dialogInterface, i1) -> {
-                                    finish();
-                                })
+                                .setPositiveButton("Next Level", (di, i1) ->
+                                        restartListener.onClick(null))
+                                .setNegativeButton("Exit", (dialogInterface, i1) -> finish())
                                 .setOnDismissListener(dialogInterface -> restart())
                                 .show();
                     }
@@ -331,5 +333,13 @@ public class FieldView extends View {
 
     public void setListener(OnClickListener listener) {
         this.listener = listener;
+    }
+
+    public void setGotchaListener(OnClickListener gotchaListener) {
+        this.gotchaListener = gotchaListener;
+    }
+
+    public void setRestartListener(OnClickListener restartListener) {
+        this.restartListener = restartListener;
     }
 }
