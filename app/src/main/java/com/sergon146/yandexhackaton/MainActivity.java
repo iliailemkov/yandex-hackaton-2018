@@ -13,7 +13,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -34,6 +33,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager sensorManager = null;
     public float frameTime = 0.666f;
 
+    private FieldView fieldView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +50,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                        SensorManager.SENSOR_DELAY_GAME);
 
         mCustomDrawableView = new CustomDrawableView(this);
-        setContentView(mCustomDrawableView);
+        setContentView(R.layout.activity_main);
+
+        fieldView = findViewById(R.id.field);
 
         //Calculate Boundry
         DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -72,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         xPosition += xS;
         yPosition -= yS;
 
+//        fieldView.update(xS, -yS);
+
         if (xPosition > xmax) {
             xPosition = xmax;
         } else if (xPosition < 0) {
@@ -82,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         } else if (yPosition < 0) {
             yPosition = 0;
         }
-        Log.d("ball", String.format("x:%f y:%f", xPosition, yPosition));
+//        Log.d("ball", String.format("x:%f y:%f", xPosition, yPosition));
     }
 
     @Override
@@ -92,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             //Set sensor values as acceleration
             xAcceleration = sensorEvent.values[1];
             yAcceleration = -sensorEvent.values[0];
-            Log.d("sensor", String.format("x:%f y:%f", xAcceleration, yAcceleration));
+//            Log.d("sensor", String.format("x:%f y:%f", xAcceleration, yAcceleration));
             updateBall(1);
         }
     }
