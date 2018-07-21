@@ -15,11 +15,16 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 public class FieldView extends View {
+
+    private static final float CELL_SIZE = 48.0f;
+    private static final float BALL_RADIUS = 16.0f;
+    private static final float HOLE_RADIUS = 24.0f;
 
     final PointF ball = new PointF();
     final PointF hole = new PointF();
@@ -45,6 +50,7 @@ public class FieldView extends View {
     float multiplier = 1.0f;
 
     final float holeRadius;
+    final float cellSize;
 
     public FieldView(Context context) {
         this(context, null);
@@ -57,16 +63,18 @@ public class FieldView extends View {
     public FieldView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-//        setBackgroundColor(Color.GREEN);
-
         ballBitmap = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ball);
 
         final float scale = getContext().getResources().getDisplayMetrics().density;
-        ballRadius = scale * 16.0f;
-        holeRadius = scale * 24.0f;
+        ballRadius = scale * BALL_RADIUS;
+        holeRadius = scale * HOLE_RADIUS;
+
+        cellSize = scale * CELL_SIZE;
 
         ball.x = ballRadius * 2.5f;
         ball.y = ballRadius * 2.5f;
+
+        reset();
     }
 
     @Nullable
@@ -74,10 +82,15 @@ public class FieldView extends View {
 
     boolean caught = false;
 
-    private void restart() {
+    private void reset() {
         caught = false;
         multiplier = 1.0f;
-        ball.x = ball.y = ballRadius * 1.5f;
+        ball.x = ball.y = ballRadius * 2.5f;
+        holePaint.setColor(Color.DKGRAY);
+    }
+
+    private void restart() {
+        reset();
         invalidate();
     }
 
@@ -93,6 +106,7 @@ public class FieldView extends View {
                 caught = true;
                 if (animator != null) animator.cancel();
                 animator = ValueAnimator.ofFloat(1.0f, 0.0f).setDuration(500);
+                animator.setInterpolator(new AccelerateDecelerateInterpolator());
                 animator.addUpdateListener(animator -> {
                     multiplier = (float) animator.getAnimatedValue();
                     invalidate();
@@ -110,10 +124,6 @@ public class FieldView extends View {
                     }
                 });
                 animator.start();
-            } else {
-                if (animator != null) animator.cancel();
-                multiplier = 1.0f;
-                holePaint.setColor(Color.DKGRAY);
             }
         } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
             return true;
